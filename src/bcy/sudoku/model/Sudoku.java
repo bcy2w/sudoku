@@ -1,0 +1,1 @@
+package bcy.sudoku.model;

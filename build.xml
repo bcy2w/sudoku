@@ -1,0 +1,60 @@
+<project name="Sudoku" default="dist">
+    <property name="src.dir" value="src"/>
+    <property name="build.dir" value="build"/>
+    <property name="classes.dir" value="${build.dir}/classes"/>
+    <property name="dist.dir" value="dist"/>
+    <property name="pkg.dir" value="${build.dir}/pkg"/>
+    <property name="main-jar" value="${ant.project.name}.jar"/>
+    <property name="main-class" value="bcy.sudoku.Main"/>
+
+    <path id="project.classpath">
+        <fileset dir="lib">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+    <target name="run">
+        <java fork="true" jar="${pkg.dir}/${main-jar}">
+        </java>
+    </target>
+
+    <target name="dist" depends="jar">
+        <zip destfile="${dist.dir}/${ant.project.name}.zip">
+            <fileset dir="${pkg.dir}"/>
+        </zip>
+    </target>
+
+    <target name="jar" depends="compile">
+        <manifestclasspath property="manifest-cp" jarfile="./foo.jar">
+            <classpath refid="project.classpath"/>
+        </manifestclasspath>
+        <echo message="Manifest Classpath: ${manifest-cp}"/>
+        <jar destfile="${pkg.dir}/${main-jar}"
+            basedir="${classes.dir}">
+            <manifest>
+                <attribute name="Main-Class" value="${main-class}"/>
+                <attribute name="Class-Path" value="${manifest-cp}"/>
+            </manifest>
+        </jar>
+        <copy todir="${pkg.dir}/lib">
+            <fileset dir="lib"/>
+        </copy>
+        <copy todir="${pkg.dir}" file="config.properties.tmpl"/>
+        <copy todir="${pkg.dir}" file="logging.properties"/>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="build/classes"/>
+        <javac srcdir="src" destdir="build/classes"
+            debug="on">
+            <classpath refid="project.classpath"/>
+        </javac>
+        <copy todir="build/classes">
+            <fileset dir="src">
+                <include name="**/*xml"/>
+                <include name="**/*.css"/>
+                <include name="**/*.properties*"/>
+            </fileset>
+        </copy>
+    </target>
+</project>
